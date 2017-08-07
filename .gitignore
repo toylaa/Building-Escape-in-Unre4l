@@ -23,10 +23,10 @@
 
 
 
-# Visual Studio 2015 user specific files
+# Visual Studio user specific files
 .vs/
 
-# Visual Studio 2015 database file
+# Visual Studio database file
 *.VC.db
 
 # Compiled Object files
@@ -98,5 +98,6 @@ Intermediate/*
 
 # Cache files for the editor to use
 DerivedDataCache/*
-*/Content/StarterContent/*
+
+BuildingEscape/Content/StarterContent/Architecture/Floor_400x400.uasset
 BuildingEscape/.vs/BuildingEscape/v15/ipch/AutoPCH/BUILDINGESCAPE-2e4c7995/POSITIONREPORTER-b68bb480/POSITIONREPORTER.ipch
