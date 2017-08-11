@@ -6,6 +6,7 @@
 #include "Components/ActorComponent.h"
 #include "Components/InputComponent.h"
 #include "GameFramework/PlayerController.h"
+#include "PhysicsEngine/PhysicsHandleComponent.h"
 #include "DrawDebugHelpers.h"
 #define OUT
 
@@ -32,8 +33,10 @@ void UGrabber::FindPhysicsHandleComponent()
 {
 	///Look for attached Physics Handle
 	PhysicsHandle = GetOwner()->FindComponentByClass<UPhysicsHandleComponent>();
-	if (PhysicsHandle) {/*Do nothing*/ }
-	else { UE_LOG(LogTemp, Error, TEXT("%s Missing Physics Handle Component"), *GetOwner()->GetName()); }
+	PhysicsHandle = GetOwner()->FindComponentByClass<UPhysicsHandleComponent>();
+	
+	if (PhysicsHandle) 	{ 		UE_LOG(LogTemp, Error, TEXT("Physics Handle Attached")) 	}
+	else {		 UE_LOG(LogTemp, Error, TEXT("%s Missing Physics Handle Component"), *GetOwner()->GetName() )	 }
 }
 
 
@@ -48,7 +51,7 @@ void UGrabber::SetupInputComponent()
 		InputComponent->BindAction("Grab", IE_Pressed, this, &UGrabber::Grab);
 		InputComponent->BindAction("Grab", IE_Released, this, &UGrabber::Drop);
 	}
-	else{UE_LOG(LogTemp, Error, TEXT("%s missing Input Component"), *GetOwner()->GetName());}
+	else{UE_LOG(LogTemp, Error, TEXT("%s missing Input Component"), *GetOwner()->GetName())}
 }
 
 
@@ -85,7 +88,7 @@ FHitResult UGrabber::GetFirstPhysicsBodyInReach() const
 	AActor * ActorHit = Hit.GetActor();
 	if (ActorHit)
 	{
-		UE_LOG(LogTemp, Error, TEXT("Line-Trace HIT--> %s :)"), *(ActorHit->GetName()))
+		UE_LOG(LogTemp, Error, TEXT("Line-Trace HIT--> %s :)"), *ActorHit->GetName())
 	}
 	///Get on with it...		
 return Hit;
@@ -101,25 +104,26 @@ void UGrabber::Grab()
 	auto ActorHit = HitResult.GetActor();
 	
 
-		UE_LOG(LogTemp, Warning, TEXT("** Actor hit : %s**"), *ActorHit->GetName());
+		
 		// GrabComponent Docs ----- // 
 		//	void GrabComponentAtLocation(class UPrimitiveComponent* Component, FName InBoneName, FVector GrabLocation);
 		//	void GrabComponentAtLocationWithRotation(class UPrimitiveComponent* Component, FName InBoneName, FVector Location, FRotator Rotation);
 	
+
 	
-		if (PhysicsHandle == nullptr)
+	
+		if (!ActorHit)
+			UE_LOG(LogTemp, Warning, TEXT("Whiff.."))
+		else if(ActorHit)
 		{
-			UE_LOG(LogTemp, Error, TEXT("NULL PTR! YOU MESSED UP THE POINTERS !! --> %s"), *(ActorHit->GetName()))
-		}
-		
-		else
-		{
-			PhysicsHandle->GrabComponentAtLocationWithRotation(
-				ComponentToGrab,
-				NAME_None,
-				ComponentToGrab->GetOwner()->GetActorLocation(),
-				FRotator(0)
-			);
+			UE_LOG(LogTemp, Warning, TEXT("PhysicsHandle desc!! --> %s"), *PhysicsHandle->GetDesc())
+				PhysicsHandle->GrabComponentAtLocationWithRotation(
+					ComponentToGrab,
+					NAME_None,
+					ComponentToGrab->GetOwner()->GetActorLocation(),
+					FRotator(0)
+				);
+			UE_LOG(LogTemp, Warning, TEXT("Component Grabbed!"))
 		}
 
 	
@@ -132,6 +136,7 @@ void UGrabber::Drop()
 	UE_LOG(LogTemp, Warning, TEXT("** Drop **"));
 
 	//TODO Release Physics handle
+	PhysicsHandle->ReleaseComponent();
 
 }
 
@@ -141,11 +146,24 @@ void UGrabber::TickComponent(float DeltaTime, ELevelTick TickType, FActorCompone
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
+	FVector PlayerViewPointLocation;
+	FRotator PlayerViewPointRotation;
+
+	GetWorld()->GetFirstPlayerController()->GetPlayerViewPoint(
+		OUT PlayerViewPointLocation,
+		OUT PlayerViewPointRotation
+	);
+
+	FVector LineTraceEnd = PlayerViewPointLocation + PlayerViewPointRotation.Vector() * Reach;
 
 	///if the physics handle is attached
+	if (PhysicsHandle->GrabbedComponent)
+	{
 		//Move the object that were holding 
+		PhysicsHandle->SetTargetLocation(LineTraceEnd);
 
-	
+
+	}
 
 }
 
