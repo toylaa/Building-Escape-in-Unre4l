@@ -27,24 +27,28 @@ public:
 	// Called every frame
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
+	
+
 private:
-	float Reach = 100.f;
-
+	float Reach = 150.f;
+	bool Grabbed;
+	FRotator ActorRotation;
 	UPhysicsHandleComponent* PhysicsHandle = nullptr;
-
 	UInputComponent* InputComponent = nullptr;
+	
 	//grab whats in Reach ( Of Ray-cast ) 
 	void Grab();
-
 	//Called when grab is released
 	void Drop();
-	void FindPhysicsHandleComponent();	
-
+	//Rotations
+	void RotateRight();
+	void RotateLeft();
+	//Get end of Reach Line Vector
+	FVector GetReachLineEnd();
+	//Find PhysicsHandleComponent
+	void FindPhysicsHandleComponent();
 	//Setup (assumed) attached Input Component
 	void SetupInputComponent();
-
 	// Return Hit for first physics body in "Reach"
-	FHitResult GetFirstPhysicsBodyInReach() const;
-	
-	
+	FHitResult GetFirstPhysicsBodyInReach() const;		
 };
