@@ -43,8 +43,10 @@ private:
 	//Rotations
 	void RotateRight();
 	void RotateLeft();
-	//Get end of Reach Line Vector
-	FVector GetReachLineEnd();
+	//Get START of Reach Line Vector
+	FVector GetReachLineStart() const;
+	//Get END of Reach Line Vector
+	FVector GetReachLineEnd() const;
 	//Find PhysicsHandleComponent
 	void FindPhysicsHandleComponent();
 	//Setup (assumed) attached Input Component
