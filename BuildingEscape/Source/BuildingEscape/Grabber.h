@@ -53,4 +53,5 @@ private:
 	void SetupInputComponent();
 	// Return Hit for first physics body in "Reach"
 	FHitResult GetFirstPhysicsBodyInReach() const;		
+	
 };
